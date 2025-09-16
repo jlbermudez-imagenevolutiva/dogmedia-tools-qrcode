@@ -1,10 +1,29 @@
 {
   "name": "qr-code-generator",
+  "private": true,
   "version": "1.0.0",
+  "type": "module",
+  "description": "A modern, secure QR code generator with multiple format support",
   "scripts": {
-    "dev": "http-server -p 3000 -c-1 --cors -a localhost"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "dependencies": {
-    "http-server": "^14.1.1"
-  }
+  "dependencies": {},
+  "devDependencies": {
+    "vite": "^5.0.8",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  },
+  "keywords": [
+    "qr-code",
+    "generator",
+    "javascript",
+    "vanilla-js",
+    "tailwindcss",
+    "vite"
+  ],
+  "author": "",
+  "license": "MIT"
 }

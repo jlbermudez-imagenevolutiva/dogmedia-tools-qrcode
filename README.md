@@ -1,23 +1,33 @@
 # QR Code Generator
 
-A modern, secure QR code generator built with vanilla HTML, CSS (Tailwind), and JavaScript. Create QR codes for URLs, WiFi networks, phone numbers, vCard contacts, emails, and plain text with real-time generation and multiple download formats.
+A modern, secure QR code generator built with Vite, vanilla JavaScript, and Tailwind CSS. Create QR codes for URLs, WiFi networks, phone numbers, vCard contacts, emails, and plain text with real-time generation and multiple download formats.
 
 ## Features
 
 - **Multiple QR Code Types**: URL, WiFi, Phone, vCard, Email, and Text
-- **Real-time Generation**: Auto-generates QR codes as you type (after 8 characters)
+- **Real-time Generation**: Auto-generates QR codes as you type (after minimum content threshold)
 - **Security First**: Built with OWASP security principles including XSS prevention and input sanitization
 - **Multiple Export Formats**: Download as PNG or SVG
 - **Responsive Design**: Works perfectly on desktop and mobile devices
-- **Beautiful UI**: Modern interface with smooth hover effects and animations
-- **No Framework Dependencies**: Pure vanilla JavaScript for fast loading
+- **Modern UI**: Beautiful interface with smooth animations and hover effects
+- **Modular Architecture**: Clean, maintainable code structure
+- **Fast Performance**: Optimized builds with Vite and tree-shaking
+
+## Tech Stack
+
+- **Build Tool**: Vite 5.0
+- **Frontend**: HTML5, Vanilla JavaScript (ES6+), Tailwind CSS 3.4
+- **QR Generation**: qrcode-generator library
+- **Icons**: Lucide
+- **Code Quality**: ESLint
+- **CSS Processing**: PostCSS with Autoprefixer
 
 ## Quick Start
 
 ### Prerequisites
 
-- Node.js (version 12 or higher)
-- npm
+- Node.js (version 16 or higher)
+- npm or yarn
 
 ### Installation
 
@@ -33,12 +43,46 @@ A modern, secure QR code generator built with vanilla HTML, CSS (Tailwind), and 
    ```
 5. Open your browser and navigate to `http://localhost:3000`
 
-## Tech Stack
+### Build for Production
 
-- **Frontend**: HTML5, Tailwind CSS, Vanilla JavaScript
-- **QR Generation**: qrcode-generator library (via Cloudflare CDN)
-- **Icons**: Lucide React
-- **Server**: http-server (for development)
+```bash
+npm run build
+```
+
+The built files will be in the `dist` directory.
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## Project Structure
+
+```
+qr-code-generator/
+├── public/
+│   └── favicon.svg         # App icon
+├── src/
+│   ├── js/
+│   │   ├── managers/       # Feature managers
+│   │   │   ├── FormManager.js
+│   │   │   ├── QRManager.js
+│   │   │   └── DownloadManager.js
+│   │   ├── utils/          # Utility functions
+│   │   │   └── SecurityValidator.js
+│   │   └── QRCodeGenerator.js  # Main app class
+│   ├── styles/
+│   │   └── main.css        # Tailwind CSS and custom styles
+│   └── main.js             # App entry point
+├── index.html              # Main HTML file
+├── vite.config.js          # Vite configuration
+├── tailwind.config.js      # Tailwind configuration
+├── postcss.config.js       # PostCSS configuration
+├── .eslintrc.json          # ESLint configuration
+├── package.json            # Dependencies and scripts
+└── README.md               # Documentation
+```
 
 ## Supported QR Code Types
 
@@ -78,37 +122,39 @@ A modern, secure QR code generator built with vanilla HTML, CSS (Tailwind), and 
 - **Safe Rendering**: No direct HTML injection, all content is safely processed
 - **Data Limits**: Text length limits to prevent QR code complexity issues
 
-## Download Options
+## Development Scripts
 
-- **PNG Format**: High-resolution raster image (400x400px)
-- **SVG Format**: Scalable vector graphics for perfect quality at any size
-- **Timestamped Filenames**: Automatic filename generation with date/time
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint code analysis
 
-## UI/UX Features
+## Customization
 
-- **Auto-Generation**: QR codes generate automatically as you type
-- **Real-time Validation**: Instant feedback on input errors
-- **Smooth Animations**: Polished hover effects and transitions
-- **Responsive Grid**: Adapts to different screen sizes
-- **Visual Feedback**: Clear active states and loading indicators
+### Styling
+Modify Tailwind classes in the HTML or add custom styles in `src/styles/main.css`.
 
-## Browser Compatibility
+### QR Code Settings
+Adjust parameters in `src/js/managers/QRManager.js`:
+- Cell size and margin
+- Error correction level
+- Output formats
 
-- Chrome (recommended)
-- Firefox
-- Safari
-- Edge
-- Mobile browsers (iOS Safari, Chrome Mobile)
+### Security Settings
+Modify validation rules in `src/js/utils/SecurityValidator.js`:
+- Text length limits
+- URL validation patterns
+- Input sanitization rules
 
 ## Deployment Options
 
-### Option 1: Static Hosting (Recommended)
+### Static Hosting (Recommended)
 
-Deploy to any static hosting service:
+The built application is a static site that can be deployed anywhere:
 
 **Netlify:**
-1. Drag and drop the project folder to Netlify
-2. Your app will be live instantly
+1. Build the project: `npm run build`
+2. Deploy the `dist` folder to Netlify
 
 **Vercel:**
 1. Install Vercel CLI: `npm i -g vercel`
@@ -116,65 +162,47 @@ Deploy to any static hosting service:
 3. Follow the prompts
 
 **GitHub Pages:**
-1. Push code to GitHub repository
-2. Enable GitHub Pages in repository settings
-3. Select source branch
+1. Build the project: `npm run build`
+2. Deploy the `dist` folder contents
 
-### Option 2: Traditional Web Server
+### Traditional Web Servers
 
-Upload all files to your web server's public directory:
+Upload the built files from the `dist` directory to any web server:
 - Apache
-- Nginx  
+- Nginx
 - IIS
 - Any static file server
 
-### Option 3: Docker
+### Docker
 
 Create a `Dockerfile`:
 ```dockerfile
+FROM node:18-alpine as build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
 FROM nginx:alpine
-COPY . /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-Build and run:
-```bash
-docker build -t qr-generator .
-docker run -p 80:80 qr-generator
-```
+## Browser Compatibility
 
-## Configuration
-
-### Customization Options
-
-**Colors**: Modify the Tailwind CSS classes in `index.html` and custom styles in `script.js`
-
-**QR Code Settings**: Adjust parameters in the `generateQRCode()` method:
-- `cellSize`: Module size (default: 4)
-- `margin`: Border size (default: 4) 
-- Error correction level (default: 'M' - Medium)
-
-**Security Settings**: Modify validation rules in `SecurityValidator` object:
-- Text length limits
-- URL validation patterns
-- Input sanitization rules
-
-## Project Structure
-
-```
-qr-code-generator/
-├── index.html          # Main HTML file
-├── script.js           # JavaScript application logic
-├── package.json        # Dependencies and scripts
-└── README.md          # Documentation
-```
+- Chrome/Chromium (recommended)
+- Firefox
+- Safari
+- Edge
+- Mobile browsers (iOS Safari, Chrome Mobile)
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
+3. Make your changes following the existing code style
 4. Test thoroughly
 5. Submit a pull request
 
@@ -182,22 +210,14 @@ qr-code-generator/
 
 This project is open source and available under the [MIT License](LICENSE).
 
-## Bug Reports
+## Performance Features
 
-If you find any bugs or have feature requests, please create an issue with:
-- Description of the problem
-- Steps to reproduce
-- Expected vs actual behavior
-- Browser/device information
-
-## Tips for Best Results
-
-- Use high contrast colors for better scanning
-- Test QR codes with multiple scanner apps
-- Keep text content under 2953 characters
-- Include country codes for phone numbers
-- Use HTTPS URLs when possible
+- **Tree Shaking**: Unused code is automatically removed
+- **Code Splitting**: Optimized bundle sizes
+- **Fast Refresh**: Instant updates during development
+- **Optimized Assets**: Minified CSS and JavaScript
+- **Modern Build**: ES6+ with fallbacks for older browsers
 
 ---
 
-**Made with care using vanilla JavaScript and modern web standards**
+**Built with modern web technologies and best practices**
