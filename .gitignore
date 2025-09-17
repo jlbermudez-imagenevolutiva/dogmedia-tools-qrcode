@@ -78,3 +78,6 @@ temp/
 
 # Netlify
 .netlify
+
+#OS
+.DS_Store
